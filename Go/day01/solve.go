@@ -3,8 +3,8 @@ package day01
 import (
 	"aoc/utils"
 	"bufio"
+	"errors"
 	"os"
-	"strconv"
 	"strings"
 	"unicode"
 )
@@ -27,15 +27,76 @@ func parseInput(path string) ([]string, error) {
 	return lines, nil
 }
 
-func getDigits(s string) string {
-	var digits strings.Builder
-	for _, c := range s {
-		if unicode.IsDigit(c) {
-			digits.WriteRune(c)
+var digitMap = map[string]int{
+	"zero":  0,
+	"one":   1,
+	"two":   2,
+	"three": 3,
+	"four":  4,
+	"five":  5,
+	"six":   6,
+	"seven": 7,
+	"eight": 8,
+	"nine":  9,
+}
+
+func checkWordDigit(s string) (bool, int) {
+	for k, v := range digitMap {
+		if strings.Contains(s, k) {
+			return true, v
 		}
 	}
 
-	return digits.String()
+	return false, -1
+}
+
+func findFirstDigit(s string, checkWords bool) (int, error) {
+	for idx := 0; idx < len(s); idx++ {
+		if checkWords {
+			found, digit := checkWordDigit(s[:idx])
+			if found {
+				return digit, nil
+			}
+		}
+
+		if unicode.IsDigit(rune(s[idx])) {
+			return int(s[idx] - '0'), nil
+		}
+	}
+
+	return -1, errors.New("no first digit found")
+}
+
+func findLastDigit(s string, countWords bool) (int, error) {
+	for idx := len(s) - 1; idx >= 0; idx-- {
+		if countWords {
+			found, digit := checkWordDigit(s[idx:])
+			if found {
+				return digit, nil
+			}
+		}
+
+		if unicode.IsDigit(rune(s[idx])) {
+			return int(s[idx] - '0'), nil
+		}
+	}
+
+	return -1, errors.New("no last digit found")
+}
+
+func findCalibrationValue(line string, countWords bool) (int, error) {
+	first, err := findFirstDigit(line, countWords)
+	if err != nil {
+		return -1, err
+	}
+	utils.CheckError(err)
+
+	last, err := findLastDigit(line, countWords)
+	if err != nil {
+		return -1, err
+	}
+
+	return 10*first + last, nil
 }
 
 func PartA(path string) int {
@@ -44,23 +105,24 @@ func PartA(path string) int {
 
 	sum := 0
 	for _, line := range lines {
-		var str strings.Builder
-		digits := getDigits(line)
-		str.WriteByte(digits[0])
-		str.WriteByte(digits[len(digits)-1])
-
-		number, err := strconv.Atoi(str.String())
+		cv, err := findCalibrationValue(line, false)
 		utils.CheckError(err)
-
-		sum += number
+		sum += cv
 	}
 
 	return sum
 }
 
-func PartB(path string) string {
-	_, err := parseInput(path)
+func PartB(path string) int {
+	lines, err := parseInput(path)
 	utils.CheckError(err)
 
-	return "Not implemented"
+	sum := 0
+	for _, line := range lines {
+		cv, err := findCalibrationValue(line, true)
+		utils.CheckError(err)
+		sum += cv
+	}
+
+	return sum
 }
