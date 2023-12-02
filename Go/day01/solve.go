@@ -9,6 +9,7 @@ import (
 	"unicode"
 )
 
+// Simply reads lines into a slice of strings
 func parseInput(path string) ([]string, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -27,8 +28,8 @@ func parseInput(path string) ([]string, error) {
 	return lines, nil
 }
 
+// Maps each spelled out word to the numerical digit it represents
 var digitMap = map[string]int{
-	"zero":  0,
 	"one":   1,
 	"two":   2,
 	"three": 3,
@@ -40,6 +41,7 @@ var digitMap = map[string]int{
 	"nine":  9,
 }
 
+// Checks if the given string contains a spelled-out digit, and if so returns which one it found.
 func checkWordDigit(s string) (bool, int) {
 	for k, v := range digitMap {
 		if strings.Contains(s, k) {
@@ -50,6 +52,10 @@ func checkWordDigit(s string) (bool, int) {
 	return false, -1
 }
 
+// Finds the first digit in the string.  If checkWords is true, spelled-out digits count as well.
+// In order to guarantee we find the first instance of a spelled out word, we progressively take
+// substrings starting with the first character, then the first 2, then the first 3, and so on
+// and check them.  This is not particularly efficient, but works
 func findFirstDigit(s string, checkWords bool) (int, error) {
 	for idx := 0; idx < len(s); idx++ {
 		if checkWords {
@@ -67,6 +73,10 @@ func findFirstDigit(s string, checkWords bool) (int, error) {
 	return -1, errors.New("no first digit found")
 }
 
+// Finds the last digit in the string.  If checkWords is true, spelled-out digits count as well.
+// In order to guarantee we find the first instance of a spelled out word, we progressively take
+// substrings starting with the last character, then the last 2, then the last 3, and so on
+// and check them.  This is not particularly efficient, but works
 func findLastDigit(s string, countWords bool) (int, error) {
 	for idx := len(s) - 1; idx >= 0; idx-- {
 		if countWords {
@@ -84,6 +94,7 @@ func findLastDigit(s string, countWords bool) (int, error) {
 	return -1, errors.New("no last digit found")
 }
 
+// Finds the first and last digit and sums them together
 func findCalibrationValue(line string, countWords bool) (int, error) {
 	first, err := findFirstDigit(line, countWords)
 	if err != nil {
