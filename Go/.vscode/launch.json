@@ -5,7 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch App",
+            "name": "Day 01",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "1",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 02",
             "type": "go",
             "request": "launch",
             "mode": "debug",
@@ -15,6 +27,282 @@
                 "2",
                 "-s"
             ]
-        }
+        },
+        {
+            "name": "Day 03",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "3",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 04",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "4",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 05",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "5",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 06",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "6",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 07",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "7",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 08",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "8",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 09",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "9",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 10",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "10",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 11",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "11",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 12",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "12",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 13",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "13",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 14",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "14",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 15",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "15",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 16",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "16",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 17",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "17",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 18",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "18",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 19",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "19",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 20",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "20",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 21",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "21",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 22",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "22",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 23",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "23",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 24",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "24",
+                "-s"
+            ]
+        },
+        {
+            "name": "Day 25",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "main.go",
+            "args": [
+                "-d",
+                "25",
+                "-s"
+            ]
+        },
     ]
 }

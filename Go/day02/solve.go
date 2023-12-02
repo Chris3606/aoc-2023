@@ -9,7 +9,10 @@ import (
 	"strings"
 )
 
+// "Data" from the game; maps colors to number of that item
 type GameData map[string]int
+
+// An ID and a series of game data structures indicating what was drawn
 type Game struct {
 	id   int
 	data []GameData
@@ -49,6 +52,7 @@ func parseInput(path string) ([]Game, error) {
 	var games []Game
 	for scanner.Scan() {
 
+		// Break into Game ID and game data
 		partScanner := bufio.NewScanner(strings.NewReader(scanner.Text()))
 		partScanner.Split(utils.ScanDelimiterFunc(": "))
 
@@ -62,12 +66,14 @@ func parseInput(path string) ([]Game, error) {
 		}
 		data := partScanner.Text()
 
+		// Parse Game {int}
 		var id int
 		_, err = fmt.Sscanf(idData, "Game %d", &id)
 		if err != nil {
 			return nil, err
 		}
 
+		// Scan game data (separated by "; ")
 		game := Game{id, nil}
 		dataScanner := bufio.NewScanner(strings.NewReader(data))
 		dataScanner.Split(utils.ScanDelimiterFunc("; "))
