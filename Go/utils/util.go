@@ -22,3 +22,42 @@ func Sum[T Summable](values []T) T {
 
 	return sum
 }
+
+type Point struct {
+	X int
+	Y int
+}
+
+// Directions
+var UP = Point{0, -1}
+var UP_RIGHT = Point{1, -1}
+var RIGHT = Point{1, 0}
+var DOWN_RIGHT = Point{1, 1}
+var DOWN = Point{0, 1}
+var DOWN_LEFT = Point{-1, 1}
+var LEFT = Point{-1, 0}
+var UP_LEFT = Point{-1, -1}
+
+var CARDINAL_DIRS_CLOCKWISE = []Point{UP, RIGHT, DOWN, LEFT}
+var DIRS_CLOCKWISE = []Point{UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT}
+
+func FromIndex(index, width int) Point {
+	return Point{index % width, index / width}
+}
+
+func (point Point) ToIndex(width int) int {
+	return point.Y*width + point.X
+}
+
+func (p1 Point) Add(p2 Point) Point {
+	return Point{p1.X + p2.X, p1.Y + p2.Y}
+}
+
+func (p1 Point) Sub(p2 Point) Point {
+	return Point{p1.X - p2.X, p1.Y - p2.Y}
+}
+
+type Rectangle struct {
+	MinExtent Point
+	MaxExtent Point
+}
