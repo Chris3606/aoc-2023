@@ -8,15 +8,6 @@ import (
 type Number struct {
 	numDigits int
 	value     int
-	position  utils.Point
-}
-
-func NewNumber() Number {
-	return Number{
-		numDigits: 0,
-		value:     0,
-		position:  utils.Point{X: -1, Y: -1},
-	}
 }
 
 func (num *Number) addDigit(digit byte) {
@@ -25,65 +16,7 @@ func (num *Number) addDigit(digit byte) {
 	num.numDigits++
 }
 
-// type GridVal = byte
-
-// const (
-// 	GridBlank GridVal = iota
-// 	GridNumber
-// 	GridSymbol
-// )
-
-// func parseInput(path string) (map[utils.Point]GridVal, []Number, error) {
-// 	f, err := os.Open(path)
-// 	if err != nil {
-// 		return nil, nil, err
-// 	}
-// 	defer f.Close()
-
-// 	scanner := bufio.NewScanner(f)
-// 	scanner.Split(bufio.ScanLines)
-
-// 	grid := map[utils.Point]GridVal{}
-// 	var numbers []Number
-
-// 	width := 0
-// 	y := 0
-// 	for scanner.Scan() {
-// 		text := scanner.Bytes()
-// 		var curNum Number
-
-// 		if width == 0 {
-// 			width = len(text)
-// 		}
-
-// 		for x, ch := range text {
-// 			if ch == '.' {
-// 				if curNum.value != 0 {
-// 					numbers = append(numbers, curNum)
-// 					curNum = Number{}
-// 				}
-
-// 				continue
-// 			}
-
-// 			if ch >= '0' && ch <= '9' {
-// 				curNum.addDigit(ch)
-// 				grid[utils.Point{X: x, Y: y}] = GridNumber
-// 			} else {
-// 				grid[utils.Point{X: x, Y: y}] = GridSymbol
-// 			}
-// 		}
-// 		if curNum.value != 0 {
-// 			numbers = append(numbers, curNum)
-// 		}
-
-// 		y++
-// 	}
-
-// 	return grid, numbers, nil
-// }
-
-func parseInput(path string) (utils.Grid[byte], []Number, error) {
+func parseInput(path string) (utils.Grid[byte], map[utils.Point]*Number, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return utils.Grid[byte]{}, nil, err
@@ -99,26 +32,30 @@ func parseInput(path string) (utils.Grid[byte], []Number, error) {
 	}
 
 	// Go through the grid, find our numbers
-	var numbers []Number
+	numbers := map[utils.Point]*Number{}
 	for y := 0; y < grid.Height(); y++ {
-		curNum := NewNumber()
+		var curNum *Number
 		for x := 0; x < grid.Width(); x++ {
 			ch := grid.GetCopy(utils.Point{X: x, Y: y})
 			if ch >= '0' && ch <= '9' {
-				if curNum.position.X == -1 {
-					curNum.position = utils.Point{X: x, Y: y}
+				if curNum == nil {
+					curNum = new(Number)
 				}
 				curNum.addDigit(ch - '0')
 			} else {
-				if curNum.value != 0 {
-					numbers = append(numbers, curNum)
-					curNum = NewNumber()
+				if curNum != nil {
+					for dx := 0; dx < curNum.numDigits; dx++ {
+						numbers[utils.Point{X: x - 1 - dx, Y: y}] = curNum
+					}
+					curNum = nil
 				}
 			}
 		}
 
-		if curNum.value != 0 {
-			numbers = append(numbers, curNum)
+		if curNum != nil {
+			for dx := 0; dx < curNum.numDigits; dx++ {
+				numbers[utils.Point{X: grid.Width() - 1 - dx, Y: y}] = curNum
+			}
 		}
 	}
 
@@ -131,61 +68,82 @@ func PartA(path string) int {
 
 	// For each number, check its neighbors for symbols
 	sum := 0
-	for _, num := range numbers {
+	numbersAdded := map[*Number]bool{}
+	for pos, num := range numbers {
 		isAdjacent := false
 
-		for dx := 0; dx < num.numDigits; dx++ {
-			for _, dir := range utils.DIRS_CLOCKWISE {
-				neighbor := num.position.Add(dir)
-				neighbor.X += dx
+		for _, dir := range utils.DIRS_CLOCKWISE {
+			neighbor := pos.Add(dir)
 
-				// Outside grid bounds
-				if !grid.Contains(neighbor) {
-					continue
-				}
-				// Neighbor is part of the same number; skip it
-				if dir == utils.RIGHT && dx != num.numDigits-1 || dir == utils.LEFT && dx != 0 {
-					continue
-				}
-
-				val := grid.GetCopy(neighbor)
-				if (val < '0' || val > '9') && val != '.' {
-					isAdjacent = true
-					break
-				}
+			// Outside grid bounds
+			if !grid.Contains(neighbor) {
+				continue
 			}
-			if isAdjacent {
+
+			// Neighbor is part of the same number; skip it
+			if numbers[neighbor] == num {
+				continue
+			}
+
+			val := grid.GetCopy(neighbor)
+			if (val < '0' || val > '9') && val != '.' {
+				isAdjacent = true
 				break
 			}
 		}
 
-		if isAdjacent {
+		if isAdjacent && !numbersAdded[num] {
 			sum += num.value
+			numbersAdded[num] = true
 		}
 	}
 
 	return sum
 }
 
-func getGearRation(grid *utils.Grid[byte], gearPos utils.Point) int {
+func getGearRatio(grid *utils.Grid[byte], numbers map[utils.Point]*Number, gearPos utils.Point) int {
+	adjacentNumbers := map[*Number]bool{}
+	for _, dir := range utils.DIRS_CLOCKWISE {
+		neighbor := gearPos.Add(dir)
+		if !grid.Contains(neighbor) {
+			continue
+		}
 
+		// Find adjacent numbers
+		number := numbers[neighbor]
+		if number != nil {
+			adjacentNumbers[number] = true
+		}
+	}
+
+	ratio := 0
+	if len(adjacentNumbers) == 2 {
+		ratio = 1
+		for k := range adjacentNumbers {
+			ratio *= k.value
+		}
+	}
+
+	return ratio
 }
 
-func PartB(path string) string {
+func PartB(path string) int {
 	grid, numbers, err := parseInput(path)
 	utils.CheckError(err)
 
 	posIt := grid.Positions()
 
+	ratios := 0
 	for posIt.Next() {
 		pos := posIt.Current()
 
 		val := grid.GetCopy(pos)
 		if val != '*' {
-			break
+			continue
 		}
 
+		ratios += getGearRatio(&grid, numbers, pos)
 	}
 
-	return "Not implemented"
+	return ratios
 }
