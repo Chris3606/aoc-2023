@@ -23,6 +23,25 @@ func Sum[T Summable](values []T) T {
 	return sum
 }
 
+// Represents a range of numbers (both ends are inclusive)
+type Range struct {
+	Start int
+	End   int
+}
+
+// Creates a new range based on the given start and length
+func NewRange(start int, length int) Range {
+	return Range{
+		Start: start,
+		End:   start + length - 1,
+	}
+}
+
+// Returns whether or not r1 contains the given number.
+func (r1 Range) ContainsNum(num int) bool {
+	return num >= r1.Start && num <= r1.End
+}
+
 type Point struct {
 	X int
 	Y int
