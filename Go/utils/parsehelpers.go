@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"io"
 )
 
@@ -66,4 +67,61 @@ func ReadGridFromBytes[T any](r io.Reader, parser func(byte, Point) (T, error)) 
 	}
 
 	return GridFromSlice[T](slice, width), nil
+}
+
+// Reads in a list of items by parsing the string representation of the scanner.Scan() function
+// until Scan returns false.
+func ReadItems[T any](scanner *bufio.Scanner, parser func(string) (T, error), ignoreBlank bool) ([]T, error) {
+	var results []T
+	for scanner.Scan() {
+		text := scanner.Text()
+		if ignoreBlank && len(text) == 0 {
+			continue
+		}
+		val, err := parser(text)
+		if err != nil {
+			return nil, err
+		}
+
+		results = append(results, val)
+	}
+
+	return results, nil
+}
+
+// Reads in a list of items by parsing the string representation of the scanner.Scan() function
+// until Scan returns false.
+func ReadItemsToMap[T comparable](scanner *bufio.Scanner, parser func(string) (T, error), ignoreBlank bool) (map[T]bool, error) {
+	results := map[T]bool{}
+	for scanner.Scan() {
+		text := scanner.Text()
+		if ignoreBlank && len(text) == 0 {
+			continue
+		}
+		val, err := parser(text)
+		if err != nil {
+			return nil, err
+		}
+
+		results[val] = true
+	}
+
+	return results, nil
+}
+
+// Reads a string item from the given scanner
+func ReadStringFromScanner(scanner *bufio.Scanner) (string, error) {
+	if !scanner.Scan() {
+		return "", errors.New("bad data format")
+	}
+	return scanner.Text(), nil
+}
+
+// Reads an item from the scanner by using the given parsing function.
+func ReadItemFromScanner[T any](scanner *bufio.Scanner, parser func(string) (T, error)) (T, error) {
+	if !scanner.Scan() {
+		var noop T
+		return noop, errors.New("bad data format")
+	}
+	return parser(scanner.Text())
 }
