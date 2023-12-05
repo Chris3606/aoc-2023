@@ -94,7 +94,7 @@ func findLastDigit(s string, countWords bool) (int, error) {
 	return -1, errors.New("no last digit found")
 }
 
-// Finds the first and last digit and sums them together
+// Finds the first and last digit and puts them together
 func findCalibrationValue(line string, countWords bool) (int, error) {
 	first, err := findFirstDigit(line, countWords)
 	if err != nil {
