@@ -20,7 +20,7 @@ func NewCard(id int, winningNumbers map[int]bool, chosenNumbers map[int]bool) Ca
 	return Card{id, winningNumbers, chosenNumbers, 1}
 }
 
-func parseCardData(s string) (map[int]bool, error) {
+func parseCardNumbers(s string) (map[int]bool, error) {
 	numbersIt := bufio.NewScanner(strings.NewReader(s))
 	numbersIt.Split(utils.ScanDelimiterFunc(" "))
 
@@ -39,8 +39,7 @@ func parseInput(path string) ([]Card, error) {
 
 	var cards []Card
 	for scanner.Scan() {
-		partsIt := bufio.NewScanner(strings.NewReader(scanner.Text()))
-		partsIt.Split(utils.ScanDelimiterFunc(": "))
+		partsIt := utils.NewStringDelimiterScanner(scanner.Text(), ": ")
 
 		// Get card ID
 		id, err := utils.ReadItemFromScanner(partsIt, func(s string) (int, error) {
@@ -52,27 +51,25 @@ func parseInput(path string) ([]Card, error) {
 			return cards, err
 		}
 
-		// Get game data
+		// Get card data
 		cardData, err := utils.ReadStringFromScanner(partsIt)
 		if err != nil {
 			return cards, err
 		}
 
-		partsIt = bufio.NewScanner(strings.NewReader(cardData))
-		partsIt.Split(utils.ScanDelimiterFunc(" | "))
-
 		// Parse winning and chosen numbers
-		winningNumbers, err := utils.ReadItemFromScanner(partsIt, parseCardData)
+		partsIt = utils.NewStringDelimiterScanner(cardData, " | ")
+		winningNumbers, err := utils.ReadItemFromScanner(partsIt, parseCardNumbers)
 		if err != nil {
 			return cards, err
 		}
 
-		chosenNumbers, err := utils.ReadItemFromScanner(partsIt, parseCardData)
+		chosenNumbers, err := utils.ReadItemFromScanner(partsIt, parseCardNumbers)
 		if err != nil {
 			return cards, err
 		}
 
-		// Add game
+		// Add card
 		cards = append(cards, NewCard(id, winningNumbers, chosenNumbers))
 	}
 
@@ -120,7 +117,6 @@ func PartB(path string) int {
 	}
 
 	// count cards
-
 	cardCount := 0
 	for _, card := range cards {
 		cardCount += card.CopiesOwned

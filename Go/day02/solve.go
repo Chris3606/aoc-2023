@@ -3,7 +3,6 @@ package day02
 import (
 	"aoc/utils"
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -56,34 +55,22 @@ func parseInput(path string) ([]Game, error) {
 		partScanner := bufio.NewScanner(strings.NewReader(scanner.Text()))
 		partScanner.Split(utils.ScanDelimiterFunc(": "))
 
-		if !partScanner.Scan() {
-			return nil, errors.New("no ID data found")
-		}
-		idData := partScanner.Text()
-
-		if !partScanner.Scan() {
-			return nil, errors.New("no game data found")
-		}
-		data := partScanner.Text()
-
-		// Parse Game {int}
-		var id int
-		_, err = fmt.Sscanf(idData, "Game %d", &id)
+		id, err := utils.ReadItemFromScanner(partScanner, func(s string) (int, error) {
+			id := 0
+			_, err = fmt.Sscanf(s, "Game %d", &id)
+			return id, err
+		})
 		if err != nil {
 			return nil, err
 		}
 
 		// Scan game data (separated by "; ")
 		game := Game{id, nil}
-		dataScanner := bufio.NewScanner(strings.NewReader(data))
-		dataScanner.Split(utils.ScanDelimiterFunc("; "))
-		for dataScanner.Scan() {
-			gameData, err := parseGameData(dataScanner.Text())
-			if err != nil {
-				return nil, err
-			}
-
-			game.data = append(game.data, gameData)
+		game.data, err = utils.ReadItemFromScanner(partScanner, func(s string) ([]GameData, error) {
+			return utils.ReadItems(utils.NewStringDelimiterScanner(s, "; "), parseGameData, false)
+		})
+		if err != nil {
+			return nil, err
 		}
 
 		games = append(games, game)

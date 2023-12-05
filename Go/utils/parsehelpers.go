@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"strings"
 )
 
 // A split function which can be passed to scanner.Split to split on an arbitrary separator
@@ -32,6 +33,14 @@ func ScanDelimiterFunc(separator string) func(data []byte, atEOF bool) (advance 
 		// Request more data.
 		return 0, nil, nil
 	}
+}
+
+// Gets a string scanner which splits on the given delimiter
+func NewStringDelimiterScanner(data string, separator string) *bufio.Scanner {
+	s := bufio.NewScanner(strings.NewReader(data))
+	s.Split(ScanDelimiterFunc(separator))
+
+	return s
 }
 
 // Reads grid in the following format
