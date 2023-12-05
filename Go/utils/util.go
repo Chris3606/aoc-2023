@@ -42,6 +42,11 @@ func (r1 Range) ContainsNum(num int) bool {
 	return num >= r1.Start && num <= r1.End
 }
 
+// Returns whether or not r1 and r2 overlap.
+func (r1 Range) Overlaps(r2 Range) bool {
+	return r1.Start <= r2.End && r2.Start <= r1.End
+}
+
 type Point struct {
 	X int
 	Y int
