@@ -1,6 +1,7 @@
 ﻿namespace AdventOfCode;
 
-public class Day_26 : BaseDay
+// ReSharper disable once InconsistentNaming
+public sealed class Day_26 : BaseDay
 {
     private readonly string _input;
 

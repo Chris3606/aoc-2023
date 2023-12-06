@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AoCHelper" Version="3.0.0" />
+    <PackageReference Include="GoRogue" Version="3.0.0-beta08" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -17,6 +18,9 @@
   <ItemGroup>
     <None Update="Inputs\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Inputs\01.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
