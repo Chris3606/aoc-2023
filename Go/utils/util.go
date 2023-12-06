@@ -1,32 +1,17 @@
 package utils
 
-import (
-	"golang.org/x/exp/constraints"
-)
-
-type Summable interface {
-	constraints.Ordered | constraints.Complex | string
-}
-
 func CheckError(e error) {
 	if e != nil {
 		panic(e)
 	}
 }
 
-func Sum[T Summable](values []T) T {
-	var sum T
-	for _, v := range values {
-		sum += v
-	}
-
-	return sum
-}
-
 // Represents a range of numbers (both ends are inclusive)
 type Range struct {
+	// The start value of the range (inclusive)
 	Start int
-	End   int
+	// The end value for the range (inclusive)
+	End int
 }
 
 // Creates a new range based on the given start and length
@@ -35,6 +20,12 @@ func NewRange(start int, length int) Range {
 		Start: start,
 		End:   start + length - 1,
 	}
+}
+
+// Gets the length of the range.  Exactly this many elements starting from "start" are included
+// within the range.
+func (r Range) Length() int {
+	return r.End - r.Start + 1
 }
 
 // Returns whether or not r1 contains the given number.
