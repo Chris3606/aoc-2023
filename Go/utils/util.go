@@ -1,5 +1,7 @@
 package utils
 
+import "math"
+
 func CheckError(e error) {
 	if e != nil {
 		panic(e)
@@ -72,7 +74,32 @@ func (p1 Point) Sub(p2 Point) Point {
 	return Point{p1.X - p2.X, p1.Y - p2.Y}
 }
 
-type Rectangle struct {
-	MinExtent Point
-	MaxExtent Point
+// type Rectangle struct {
+// 	MinExtent Point
+// 	MaxExtent Point
+// }
+
+// Builds a map of how often each element occurs in the given slice
+func BuildHistogram[T comparable](slice []T) map[T]int {
+	hist := map[T]int{}
+
+	for _, v := range slice {
+		hist[v] += 1
+	}
+
+	return hist
+}
+
+// Gets the pair from the map with the maximum value
+func MaxFromMap[K comparable](m map[K]int) (K, int) {
+	var item K
+	maxVal := math.MinInt
+	for k, v := range m {
+		if v > maxVal {
+			maxVal = v
+			item = k
+		}
+	}
+
+	return item, maxVal
 }
