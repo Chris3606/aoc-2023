@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using SadRogue.Primitives;
-
-namespace AdventOfCode;
+﻿namespace AdventOfCode;
 
 readonly record struct Range(long Start, long End)
 {
