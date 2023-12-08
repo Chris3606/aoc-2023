@@ -41,7 +41,7 @@ func parseInput(path string) (string, map[string]NodeData, error) {
 	return directions, nodes, nil
 }
 
-func followPath(nodes map[string]NodeData, curNode string, dir byte) string {
+func followDirection(nodes map[string]NodeData, curNode string, dir byte) string {
 	if dir == 'L' {
 		curNode = nodes[curNode].Left
 	} else {
@@ -51,23 +51,27 @@ func followPath(nodes map[string]NodeData, curNode string, dir byte) string {
 	return curNode
 }
 
-func PartA(path string) int {
-	directions, nodes, err := parseInput(path)
-	utils.CheckError(err)
-
-	curNode := "AAA"
+func getStepsForPath(nodes map[string]NodeData, startNode string, isEndNode func(string) bool, directions string) int {
+	curNode := startNode
 	curDirIdx := 0
 	steps := 0
 
-	for curNode != "ZZZ" {
+	for !isEndNode(curNode) {
 		curDirection := directions[curDirIdx]
-		curNode = followPath(nodes, curNode, curDirection)
+		curNode = followDirection(nodes, curNode, curDirection)
 
 		steps++
 		curDirIdx = (curDirIdx + 1) % len(directions)
 	}
 
 	return steps
+}
+
+func PartA(path string) int {
+	directions, nodes, err := parseInput(path)
+	utils.CheckError(err)
+
+	return getStepsForPath(nodes, "AAA", func(s string) bool { return s == "ZZZ" }, directions)
 }
 
 func PartB(path string) int {
@@ -80,18 +84,7 @@ func PartB(path string) int {
 			continue
 		}
 
-		curNode := k
-		curDirIdx := 0
-		steps := 0
-		for curNode[2] != 'Z' {
-			curDirection := directions[curDirIdx]
-			curNode = followPath(nodes, curNode, curDirection)
-
-			steps++
-			curDirIdx = (curDirIdx + 1) % len(directions)
-		}
-
-		paths = append(paths, steps)
+		paths = append(paths, getStepsForPath(nodes, k, func(s string) bool { return s[2] == 'Z' }, directions))
 	}
 
 	return utils.LCM(paths[0], paths[1], paths[2:]...)
