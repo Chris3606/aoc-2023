@@ -8,6 +8,16 @@ func CheckError(e error) {
 	}
 }
 
+// Inserts the given element into the slice
+func InsertToSlice[T any](a []T, index int, value T) []T {
+	if len(a) == index { // nil or empty slice or after last element
+		return append(a, value)
+	}
+	a = append(a[:index+1], a[index:]...) // index < len(a)
+	a[index] = value
+	return a
+}
+
 // Represents a range of numbers (both ends are inclusive)
 type Range struct {
 	// The start value of the range (inclusive)
