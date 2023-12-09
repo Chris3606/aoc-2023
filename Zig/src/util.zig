@@ -11,6 +11,75 @@ pub const gpa = gpa_impl.allocator();
 
 // Add utility functions here
 
+// Parsing errors
+pub const ParseError = error {
+    InvalidData
+};
+
+pub const ImplError = error {
+    NotImplemented
+};
+
+// Iterates forward over a slice
+fn ForwardIterator(comptime T: type) type {
+    const Pointer = blk: {
+        switch (@typeInfo(T)) {
+            .Pointer => |ptr_info| switch (ptr_info.size) {
+                .One => switch (@typeInfo(ptr_info.child)) {
+                    .Array => |array_info| {
+                        var new_ptr_info = ptr_info;
+                        new_ptr_info.size = .Many;
+                        new_ptr_info.child = array_info.child;
+                        new_ptr_info.sentinel = array_info.sentinel;
+                        break :blk @Type(.{ .Pointer = new_ptr_info });
+                    },
+                    else => {},
+                },
+                .Slice => {
+                    var new_ptr_info = ptr_info;
+                    new_ptr_info.size = .Many;
+                    break :blk @Type(.{ .Pointer = new_ptr_info });
+                },
+                else => {},
+            },
+            else => {},
+        }
+        @compileError("expected slice or pointer to array, found '" ++ @typeName(T) ++ "'");
+    };
+    const Element = std.meta.Elem(Pointer);
+    const ElementPointer = @Type(.{ .Pointer = ptr: {
+        var ptr = @typeInfo(Pointer).Pointer;
+        ptr.size = .One;
+        ptr.child = Element;
+        ptr.sentinel = null;
+        break :ptr ptr;
+    } });
+    return struct {
+        ptr: Pointer,
+        len: usize,
+        index: usize,
+        pub fn next(self: *@This()) ?Element {
+            if (self.index == self.len) return null;
+            const cur = self.index;
+            self.index += 1;
+
+            return self.ptr[cur];
+        }
+        pub fn nextPtr(self: *@This()) ?ElementPointer {
+            if (self.index == self.len) return null;
+            const cur = self.index;
+            self.index += 1;
+
+            return &self.ptr[cur];
+        }
+    };
+}
+
+/// Iterates over a slice.
+pub fn sliceIterator(slice: anytype) ForwardIterator(@TypeOf(slice)) {
+    return .{ .ptr = slice.ptr, .index = 0, .len = slice.len };
+}
+
 // Useful stdlib functions
 const tokenizeAny = std.mem.tokenizeAny;
 const tokenizeSeq = std.mem.tokenizeSequence;
