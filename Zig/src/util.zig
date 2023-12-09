@@ -16,10 +16,6 @@ pub const ParseError = error {
     InvalidData
 };
 
-pub const ImplError = error {
-    NotImplemented
-};
-
 // Iterates forward over a slice
 fn ForwardIterator(comptime T: type) type {
     const Pointer = blk: {

@@ -6,11 +6,11 @@ const gpa = util.gpa;
 const data = @embedFile("data/day11.txt");
 
 fn part1() !i32 {
-    return error.NotImplemented;
+    return -1;
 }
 
 fn part2() !i32 {
-    return error.NotImplemented;
+    return -1;
 }
 
 pub fn main() !void {
