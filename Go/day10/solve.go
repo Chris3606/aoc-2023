@@ -155,10 +155,11 @@ func PartB(path string) int {
 
 	mainLoop := findLoop(&grid, start)
 
-	// The trick here is to realize that the loop is always a closed polygon by definition; so,
-	// we can use typical polygon scanning algorithms from 2D computer graphics.  To figure out if
-	// areas are inside or outside of a polygon, we can count the number of times a horizontal line
-	// at a given row intersects edges: odd number == inside, even number == outside.
+	// The trick here is to realize that the loop is always a closed polygon by definition;
+	// this opens up a number of methods (shoelace algorithm for area, etc.  Here, I decided to use
+	// a typical polygon scanning algorithms from 2D computer graphics.  To figure out if areas are
+	// inside or outside of a polygon, we can count the number of times a horizontal line at a given
+	// row intersects edges: odd number == inside, even number == outside.
 	//
 	// There is a tricky corner case, though; cases where you end up intersecting a "vertex"; aka,
 	// right on a bend where the 2 ends go different ways.  There are only 2 ways this can occur:
