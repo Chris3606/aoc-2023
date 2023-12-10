@@ -7,16 +7,12 @@ import (
 	"slices"
 )
 
-// type Node struct {
-// 	Position utils.Point
-// 	Edges    []utils.Point
-// }
-
 type QueueNode struct {
 	Position utils.Point
 	Distance int
 }
 
+// Maps each character to the directions it leads to (exactly 2 per character)
 var charToNeighbors map[byte][]utils.Point = map[byte][]utils.Point{
 	'|': {utils.UP, utils.DOWN},
 	'-': {utils.RIGHT, utils.LEFT},
@@ -33,9 +29,6 @@ func parseInput(path string) (utils.Grid[byte], utils.Point, error) {
 		return utils.Grid[byte]{}, utils.Point{}, err
 	}
 	defer f.Close()
-
-	//scanner := bufio.NewScanner(f)
-	//scanner.Split(bufio.ScanLines)
 
 	grid, err := utils.ReadGridFromBytes(f, func(b byte, p utils.Point) (byte, error) { return b, nil })
 	if err != nil {
@@ -83,41 +76,9 @@ func parseInput(path string) (utils.Grid[byte], utils.Point, error) {
 	grid.Set(start, startChar)
 
 	return grid, start, nil
-
-	// graph := map[utils.Point]Node{}
-	// y := 0
-	// start := utils.Point{}
-
-	// for scanner.Scan() {
-	// 	text := scanner.Bytes()
-
-	// 	for x, b := range text {
-	// 		pos := utils.Point{X: x, Y: y}
-	// 		node := Node{Position: pos}
-	// 		for _, n := range charToNeighbors[b] {
-	// 			node.Edges = append(node.Edges, pos.Add(n))
-	// 		}
-
-	// 		if b == 'S' {
-	// 			start = pos
-	// 		}
-
-	// 		graph[pos] = node
-	// 	}
-	// 	y++
-	// }
-
-	// // Find connections for start
-	// for _, d := range utils.CARDINAL_DIRS_CLOCKWISE {
-	// 	pos += i
-	// }
-
 }
 
-func PartA(path string) int {
-	grid, start, err := parseInput(path)
-	utils.CheckError(err)
-
+func findLoop(grid *utils.Grid[byte], start utils.Point) (int, map[utils.Point]bool) {
 	visited := map[utils.Point]bool{}
 	distances := map[utils.Point]int{}
 
@@ -143,19 +104,56 @@ func PartA(path string) int {
 		}
 	}
 
-	max := 0
+	maxVal := 0
 	for _, v := range distances {
-		if v > max {
-			max = v
+		if v > maxVal {
+			maxVal = v
 		}
 	}
 
-	return max
+	return maxVal, visited
 }
 
-func PartB(path string) string {
-	_, _, err := parseInput(path)
+func PartA(path string) int {
+	grid, start, err := parseInput(path)
 	utils.CheckError(err)
 
-	return "Not implemented"
+	maxVal, _ := findLoop(&grid, start)
+
+	return maxVal
+}
+
+func PartB(path string) int {
+	grid, start, err := parseInput(path)
+	utils.CheckError(err)
+
+	_, loopTiles := findLoop(&grid, start)
+
+	numInner := 0
+	for y := 0; y < grid.Height(); y++ {
+		isInner := false
+		for x := 0; x < grid.Width(); x++ {
+			pos := utils.Point{X: x, Y: y}
+			val := grid.GetCopy(pos)
+
+			if !loopTiles[pos] {
+				val = '.'
+			}
+
+			switch val {
+			case '.':
+				if isInner {
+					numInner++
+				}
+			case 'F':
+				fallthrough
+			case '7':
+				fallthrough
+			case '|':
+				isInner = !isInner
+			}
+		}
+	}
+
+	return numInner
 }
