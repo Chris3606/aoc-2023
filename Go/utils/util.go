@@ -1,6 +1,9 @@
 package utils
 
-import "math"
+import (
+	"math"
+	"slices"
+)
 
 func CheckError(e error) {
 	if e != nil {
@@ -82,6 +85,11 @@ func (p1 Point) Add(p2 Point) Point {
 
 func (p1 Point) Sub(p2 Point) Point {
 	return Point{p1.X - p2.X, p1.Y - p2.Y}
+}
+
+func GetOppositeDir(dir Point) Point {
+	idx := slices.Index(DIRS_CLOCKWISE, dir)
+	return DIRS_CLOCKWISE[(idx+4)%len(DIRS_CLOCKWISE)]
 }
 
 // type Rectangle struct {

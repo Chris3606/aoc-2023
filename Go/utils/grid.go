@@ -49,6 +49,10 @@ func (grid *Grid[T]) Contains(point Point) bool {
 	return point.X >= 0 && point.Y >= 0 && point.X < grid.width && point.Y < grid.height
 }
 
+func (grid *Grid[T]) PosFromIndex(index int) Point {
+	return Point{index % grid.width, index / grid.width}
+}
+
 type GridPositionsIterator[T any] struct {
 	index int
 	grid  *Grid[T]
