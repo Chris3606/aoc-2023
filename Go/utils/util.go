@@ -152,3 +152,18 @@ func LCM(a, b int, integers ...int) int {
 
 	return result
 }
+
+// Calculates absolute value of an integer
+func Abs(v1 int) int {
+	if v1 < 0 {
+		return -v1
+	}
+
+	return v1
+}
+
+// Calculates manhattan distance; aka distance where only the neighbors in 4 cardinal directions are
+// adjacent.
+func ManhattanDistance(p1, p2 Point) int {
+	return Abs(p2.X-p1.X) + Abs(p2.Y-p1.Y)
+}
