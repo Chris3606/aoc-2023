@@ -1,4 +1,5 @@
 ﻿using System.Runtime;
+using SadRogue.Primitives;
 
 namespace AdventOfCode;
 
@@ -48,6 +49,18 @@ public static class Utility
         while (it.MoveNext())
             yield return (previous, previous = it.Current);
     }
-    // public static IEnumerable<(T val1, T val2)> Window<T>(this IReadOnlyList<T> enumerable)
-    //     => enumerable.Zip(enumerable.Skip(1), (a, b) => (a, b));
+
+    public static Rectangle GetBounds(this IEnumerable<Point> points)
+    {
+        int minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
+        foreach (var point in points)
+        {
+            minX = Math.Min(minX, point.X);
+            minY = Math.Min(minY, point.Y);
+            maxX = Math.Max(maxX, point.X);
+            maxY = Math.Max(maxY, point.Y);
+        }
+        
+        return new Rectangle((minX, minY), (maxX, maxY));
+    }
 }
