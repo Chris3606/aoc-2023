@@ -5,24 +5,23 @@ import (
 	"os"
 )
 
-func parseInput(path string) ([]utils.Point, error) {
+func parseInput(path string) (utils.Grid[byte], error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return utils.Grid[byte]{}, err
 	}
 	defer f.Close()
 
-	grid, err := utils.ReadGridFromBytes(f, func(b byte, p utils.Point) (byte, error) { return b, nil })
-	if err != nil {
-		return nil, err
-	}
+	return utils.ReadGridFromBytes(f, func(b byte, p utils.Point) (byte, error) { return b, nil })
+}
 
+func expandGalaxy(galaxyMap *utils.Grid[byte], expansionFactor int) []utils.Point {
 	var xMap []int
 	var previousEmpty int
-	for x := 0; x < grid.Width(); x++ {
+	for x := 0; x < galaxyMap.Width(); x++ {
 		isEmpty := true
-		for y := 0; y < grid.Height(); y++ {
-			if grid.GetCopy(utils.Point{X: x, Y: y}) == '#' {
+		for y := 0; y < galaxyMap.Height(); y++ {
+			if galaxyMap.GetCopy(utils.Point{X: x, Y: y}) == '#' {
 				isEmpty = false
 				break
 			}
@@ -31,16 +30,16 @@ func parseInput(path string) ([]utils.Point, error) {
 		xMap = append(xMap, previousEmpty)
 
 		if isEmpty {
-			previousEmpty++
+			previousEmpty += (expansionFactor - 1)
 		}
 	}
 
 	var yMap []int
 	previousEmpty = 0
-	for y := 0; y < grid.Height(); y++ {
+	for y := 0; y < galaxyMap.Height(); y++ {
 		isEmpty := true
-		for x := 0; x < grid.Width(); x++ {
-			if grid.GetCopy(utils.Point{X: x, Y: y}) == '#' {
+		for x := 0; x < galaxyMap.Width(); x++ {
+			if galaxyMap.GetCopy(utils.Point{X: x, Y: y}) == '#' {
 				isEmpty = false
 				break
 			}
@@ -49,28 +48,25 @@ func parseInput(path string) ([]utils.Point, error) {
 		yMap = append(yMap, previousEmpty)
 
 		if isEmpty {
-			previousEmpty++
+			previousEmpty += (expansionFactor - 1)
 		}
 	}
 
 	var galaxies []utils.Point
-	var posIt = grid.Positions()
+	var posIt = galaxyMap.Positions()
 	for posIt.Next() {
 		curPos := posIt.Current()
-		if grid.GetCopy(curPos) != '#' {
+		if galaxyMap.GetCopy(curPos) != '#' {
 			continue
 		}
 
 		galaxies = append(galaxies, curPos.Add(utils.Point{X: xMap[curPos.X], Y: yMap[curPos.Y]}))
 	}
 
-	return galaxies, nil
+	return galaxies
 }
 
-func PartA(path string) int {
-	galaxies, err := parseInput(path)
-	utils.CheckError(err)
-
+func sumGalacticDistances(galaxies []utils.Point) int {
 	sum := 0
 	for i := 0; i < len(galaxies); i++ {
 		for j := i; j < len(galaxies); j++ {
@@ -81,9 +77,18 @@ func PartA(path string) int {
 	return sum
 }
 
-func PartB(path string) string {
-	_, err := parseInput(path)
+func PartA(path string) int {
+	galaxyMap, err := parseInput(path)
 	utils.CheckError(err)
 
-	return "Not implemented"
+	galaxies := expandGalaxy(&galaxyMap, 2)
+	return sumGalacticDistances(galaxies)
+}
+
+func PartB(path string) int {
+	galaxyMap, err := parseInput(path)
+	utils.CheckError(err)
+
+	galaxies := expandGalaxy(&galaxyMap, 1000000)
+	return sumGalacticDistances(galaxies)
 }
