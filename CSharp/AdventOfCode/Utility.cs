@@ -38,4 +38,16 @@ public static class Utility
 
         return result;
     }
+    public static IEnumerable<(T, T)> Pairwise<T>(this IEnumerable<T> source)
+    {
+        var previous = default(T);
+        using var it = source.GetEnumerator();
+        if (it.MoveNext())
+            previous = it.Current;
+
+        while (it.MoveNext())
+            yield return (previous, previous = it.Current);
+    }
+    // public static IEnumerable<(T val1, T val2)> Window<T>(this IReadOnlyList<T> enumerable)
+    //     => enumerable.Zip(enumerable.Skip(1), (a, b) => (a, b));
 }
