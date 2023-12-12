@@ -50,6 +50,15 @@ public static class Utility
             yield return (previous, previous = it.Current);
     }
 
+    public static IEnumerable<(T, T)> Combinate<T>(this IReadOnlyList<T> items)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            for (int j = i + 1; j < items.Count; j++)
+                yield return (items[i], items[j]);
+        }
+    }
+
     public static Rectangle GetBounds(this IEnumerable<Point> points)
     {
         int minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
@@ -64,3 +73,5 @@ public static class Utility
         return new Rectangle((minX, minY), (maxX, maxY));
     }
 }
+
+public readonly record struct Point64(long X, long Y);
