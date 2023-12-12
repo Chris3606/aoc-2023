@@ -167,3 +167,18 @@ func Abs(v1 int) int {
 func ManhattanDistance(p1, p2 Point) int {
 	return Abs(p2.X-p1.X) + Abs(p2.Y-p1.Y)
 }
+
+// Compares the two slices element by element
+func CompareSlicesElementwise[T comparable](s1, s2 []T) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+
+	for i := range s1 {
+		if s1[i] != s2[i] {
+			return false
+		}
+	}
+
+	return true
+}
