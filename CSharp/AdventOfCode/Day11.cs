@@ -1,5 +1,4 @@
-﻿using SadRogue.Primitives;
-using SadRogue.Primitives.GridViews;
+﻿using SadRogue.Primitives.GridViews;
 
 namespace AdventOfCode;
 
