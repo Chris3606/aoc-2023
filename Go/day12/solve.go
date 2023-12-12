@@ -18,7 +18,7 @@ type Row struct {
 // recording the objects themselves.
 //
 // However, we DO change values in the unprocessed springs slice as we go along,
-// so our memo needs to include the value too.
+// so our memo needs to include the value too; address + value at that address == unique.
 type FuncParams struct {
 	UnprocessedSprings *byte
 	CurSpring          byte
@@ -81,8 +81,7 @@ func countSpringPermutations(unprocessed_springs []byte, cur_groups []int, memo 
 		grp = &cur_groups[0]
 	}
 	params := FuncParams{spr, curSpr, grp}
-	p, ok := memo[params]
-	if ok {
+	if p, ok := memo[params]; ok {
 		return p
 	}
 
@@ -104,7 +103,6 @@ func countSpringPermutations(unprocessed_springs []byte, cur_groups []int, memo 
 
 	// Unknown spring; count permutations with it both ways
 	case '?':
-		//permutations := 0
 		unprocessed_springs[0] = '.'
 		permutations += countSpringPermutations(unprocessed_springs, cur_groups, memo)
 
@@ -180,25 +178,20 @@ func expandRows(rows []Row, factor int) {
 	}
 }
 
-func PartA(path string) int {
-	rows, err := parseInput(path)
-	utils.CheckError(err)
-
+func sumPermutationsOfRows(rows []Row) int {
 	sum := 0
 	for _, row := range rows {
-		// var questions []int
-		// for i, c := range row.Springs {
-		// 	if c == '?' {
-		// 		questions = append(questions, i)
-		// 	}
-		// }
-
-		// matches := countSpringPermutations(row.Springs, row.Groups, map[FuncParams]int{})
-		// fmt.Println(matches)
 		sum += countSpringPermutations(row.Springs, row.Groups, map[FuncParams]int{})
 	}
 
 	return sum
+}
+
+func PartA(path string) int {
+	rows, err := parseInput(path)
+	utils.CheckError(err)
+
+	return sumPermutationsOfRows(rows)
 }
 
 func PartB(path string) int {
@@ -207,10 +200,5 @@ func PartB(path string) int {
 
 	expandRows(rows, 5)
 
-	sum := 0
-	for _, row := range rows {
-		sum += countSpringPermutations(row.Springs, row.Groups, map[FuncParams]int{})
-	}
-
-	return sum
+	return sumPermutationsOfRows(rows)
 }
