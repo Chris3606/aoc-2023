@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	VerticalLine = iota
+	NoLine = iota
+	VerticalLine
 	HorizontalLine
 )
 
@@ -37,7 +38,7 @@ func parseInput(path string) ([]utils.Grid[byte], error) {
 	return grids, nil
 }
 
-// Returns the y value for the mirror line
+// Returns the y value for the mirror line, or -1 if no mirror line is found
 func findHorizontalMirrorLine(grid utils.Grid[byte], ignoreVal int) int {
 	for y := 1; y < grid.Height(); y++ {
 		is_mirror := true
@@ -69,6 +70,7 @@ func findHorizontalMirrorLine(grid utils.Grid[byte], ignoreVal int) int {
 	return -1
 }
 
+// Returns the x value for the mirror line, or -1 if no mirror line is found
 func findVerticalMirrorLine(grid utils.Grid[byte], ignoreVal int) int {
 	for x := 1; x < grid.Width(); x++ {
 		is_mirror := true
@@ -100,16 +102,9 @@ func findVerticalMirrorLine(grid utils.Grid[byte], ignoreVal int) int {
 	return -1
 }
 
-func findMirrorLine(grid utils.Grid[byte]) (int, int) {
-	vertical := findVerticalMirrorLine(grid, -1)
-	if vertical != -1 {
-		return VerticalLine, vertical
-	}
-
-	return HorizontalLine, findHorizontalMirrorLine(grid, -1)
-}
-
-func findMirrorLineIgnore(grid utils.Grid[byte], ignoreLineType int, ignoreLineVal int) (int, int) {
+// Finds a mirror line that is NOT the one specified via the "ignore" fields.  To find any
+// mirror line, specify NoLine and -1 for ignoreLineType and ignoreLineVal.
+func findMirrorLine(grid utils.Grid[byte], ignoreLineType int, ignoreLineVal int) (int, int) {
 	vertical := 0
 	if ignoreLineType == VerticalLine {
 		vertical = findVerticalMirrorLine(grid, ignoreLineVal)
@@ -134,7 +129,7 @@ func PartA(path string) int {
 
 	sum := 0
 	for _, grid := range grids {
-		axis, line := findMirrorLine(grid)
+		axis, line := findMirrorLine(grid, NoLine, -1)
 		if line == -1 {
 			panic("No line of reflection found for a grid.")
 		}
@@ -155,7 +150,7 @@ func PartB(path string) int {
 	sum := 0
 	for _, grid := range grids {
 		// Find original line
-		origAxis, origLine := findMirrorLine(grid)
+		origAxis, origLine := findMirrorLine(grid, NoLine, -1)
 		if origLine == -1 {
 			panic("No line of reflection found for a grid.")
 		}
@@ -175,7 +170,7 @@ func PartB(path string) int {
 			grid.Set(cur, ch)
 
 			// Check reflection difference
-			axis, line := findMirrorLineIgnore(grid, origAxis, origLine)
+			axis, line := findMirrorLine(grid, origAxis, origLine)
 
 			// Set back for next check
 			grid.Set(cur, chOrig)
