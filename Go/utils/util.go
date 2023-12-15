@@ -182,3 +182,8 @@ func CompareSlicesElementwise[T comparable](s1, s2 []T) bool {
 
 	return true
 }
+
+// Removes a value from the slice
+func RemoveFromSlice[T any](slice []T, index int) []T {
+	return append(slice[:index], slice[index+1:]...)
+}
