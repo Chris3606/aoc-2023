@@ -25,14 +25,13 @@ func (item *AStarItem) Priority() int {
 }
 
 var neighbors = map[utils.Point][]utils.Point{
-	{X: 0, Y: 0}: {utils.RIGHT, utils.DOWN},
-	utils.UP:     {utils.LEFT, utils.UP, utils.RIGHT},
-	utils.RIGHT:  {utils.UP, utils.RIGHT, utils.DOWN},
-	utils.DOWN:   {utils.RIGHT, utils.DOWN, utils.LEFT},
-	utils.LEFT:   {utils.DOWN, utils.LEFT, utils.UP},
+	utils.UP:    {utils.LEFT, utils.UP, utils.RIGHT},
+	utils.RIGHT: {utils.UP, utils.RIGHT, utils.DOWN},
+	utils.DOWN:  {utils.RIGHT, utils.DOWN, utils.LEFT},
+	utils.LEFT:  {utils.DOWN, utils.LEFT, utils.UP},
 }
 
-func shortestPath(grid utils.Grid[int], start, end utils.Point) (int, bool) {
+func shortestPath(grid utils.Grid[int], start, end utils.Point, minDist, maxDist int) (int, bool) {
 	heap := lane.NewMinPriorityQueue[AStarItem, int]()
 
 	initState := State{Position: start, Direction: utils.RIGHT, Travel: 1}
@@ -76,16 +75,19 @@ func shortestPath(grid utils.Grid[int], start, end utils.Point) (int, bool) {
 				continue
 			}
 
-			// Figure out if we turned or not and set straight line travel dist accordingly.
-			// The starting point (only G == 0 since we don't have negative weights) will count as a
-			// straight line no matter where we move
+			// If we are turning, need to be at least min dist
+			if item.State.Direction != dir && item.State.Travel < minDist {
+				continue
+			}
+
+			// Also need to be no more than max dist
 			straightLineTravel := item.State.Travel + 1
 			if item.State.Direction != dir {
 				straightLineTravel = 1
 			}
 
 			// Too long in a straight line
-			if straightLineTravel > 3 {
+			if straightLineTravel > maxDist {
 				continue
 			}
 
@@ -126,7 +128,7 @@ func PartA(path string) int {
 	grid, err := parseInput(path)
 	utils.CheckError(err)
 
-	sp, ok := shortestPath(grid, utils.Point{X: 0, Y: 0}, utils.Point{X: grid.Width() - 1, Y: grid.Height() - 1})
+	sp, ok := shortestPath(grid, utils.Point{X: 0, Y: 0}, utils.Point{X: grid.Width() - 1, Y: grid.Height() - 1}, 0, 3)
 	if !ok {
 		panic("No shortest path found")
 	}
@@ -134,9 +136,14 @@ func PartA(path string) int {
 	return sp
 }
 
-func PartB(path string) string {
-	_, err := parseInput(path)
+func PartB(path string) int {
+	grid, err := parseInput(path)
 	utils.CheckError(err)
 
-	return "Not implemented"
+	sp, ok := shortestPath(grid, utils.Point{X: 0, Y: 0}, utils.Point{X: grid.Width() - 1, Y: grid.Height() - 1}, 4, 10)
+	if !ok {
+		panic("No shortest path found")
+	}
+
+	return sp
 }
