@@ -72,6 +72,11 @@ public static class Utility
         
         return new Rectangle((minX, minY), (maxX, maxY));
     }
+
+    public static IEnumerable<T> Yield<T>(this T value)
+    {
+        yield return value;
+    }
 }
 
 public readonly record struct Point64(long X, long Y);

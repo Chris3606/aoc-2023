@@ -11,6 +11,10 @@ public record SpringRecord(char[] Springs, int[] Groups)
     }
 }
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+public readonly record struct SpringRecordState(int RecordIdx, char RecordValue, int GroupIdx);
+// ReSharper restore NotAccessedPositionalProperty.Global
+
 public sealed class Day12 : BaseDay
 {
     private readonly SpringRecord[] _records;
@@ -21,47 +25,77 @@ public sealed class Day12 : BaseDay
     }
 
     public override ValueTask<string> Solve_1()
-        => new(_records.Sum(record => CountRecord(record.Springs, record.Groups)).ToString());
+        => new(_records.Sum(record => CountRecord(record.Springs, 0, record.Groups, 0)).ToString());
 
-    public override ValueTask<string> Solve_2() => throw new NotImplementedException();
+    public override ValueTask<string> Solve_2()
+        => new(_records.Select(i => Unfold(i, 5)).Sum(record => CountRecord(record.Springs, 0, record.Groups, 0)).ToString());
 
-    private int CountRecord(Span<char> record, ReadOnlySpan<int> groups)
+    private long CountRecord(Span<char> record, int recordIdx, ReadOnlySpan<int> groups, int groupIdx, Dictionary<SpringRecordState, long> memoTable = null)
     {
         if (record.Length == 0)
             return groups.Length == 0 ? 1 : 0;
+
+        memoTable ??= new Dictionary<SpringRecordState, long>();
         
+        var state = new SpringRecordState(recordIdx, record[0], groupIdx);
+        if (memoTable.TryGetValue(state, out long memoized))
+            return memoized;
+        
+        
+        long permutations = 0;
         switch (record[0])
         {
             case '.':
-                return CountRecord(record[1..], groups);
+                permutations = CountRecord(record[1..], recordIdx + 1, groups, groupIdx, memoTable);
+                break;
             case '?':
-                int permutations = 0;
                 record[0] = '#';
-                permutations += CountRecord(record, groups);
+                permutations += CountRecord(record, recordIdx, groups, groupIdx, memoTable);
                 
                 record[0] = '.';
-                permutations += CountRecord(record[1..], groups);
+                permutations += CountRecord(record[1..], recordIdx + 1, groups, groupIdx, memoTable);
 
                 record[0] = '?';
-                return permutations;
+                break;
             case '#':
                 if (groups.Length == 0)
-                    return 0;
-                
+                    break;
+
                 if (record.Length < groups[0])
-                    return 0;
-                
+                    break;
+
                 if (SpanExtensions.Count(record[..groups[0]], '.') > 0)
-                    return 0;
+                    break;
 
                 if (record.Length == groups[0])
-                    return groups.Length == 1 ? 1 : 0;
-                
-                
-                return record[groups[0]] == '#' ? 0 : CountRecord(record[(groups[0] + 1)..], groups[1..]);
+                {
+                    permutations = groups.Length == 1 ? 1 : 0;
+                    break;
+                }
 
+
+                permutations = record[groups[0]] == '#' ? 0 : CountRecord(record[(groups[0] + 1)..], recordIdx + groups[0] + 1, groups[1..], groupIdx + 1, memoTable);
+                break;
+            
             default:
                 throw new ArgumentException("Unsupported spring record", nameof(record));
         }
+        
+        memoTable.Add(state, permutations);
+
+        return permutations;
+    }
+
+    private static SpringRecord Unfold(SpringRecord record, int times)
+    {
+        IEnumerable<char> springs = record.Springs;
+        IEnumerable<int> groups = record.Groups;
+        for (int i = 1; i < times; i++)
+        {
+            springs = springs.Concat('?'.Yield()).Concat(record.Springs);
+            groups = groups.Concat(record.Groups);
+        }
+
+        return new(springs.ToArray(), groups.ToArray());
     }
 }
