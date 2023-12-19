@@ -223,3 +223,10 @@ func ReadItemFromScanner[T any](scanner *bufio.Scanner, parser func(string) (T, 
 	}
 	return parser(scanner.Text())
 }
+
+func ReadItemsFromString[T any](data string, splitFunc bufio.SplitFunc, parser func(string) (T, error), ignoreBlank bool) ([]T, error) {
+	scanner := bufio.NewScanner(strings.NewReader(data))
+	scanner.Split(splitFunc)
+
+	return ReadItems(scanner, parser, ignoreBlank)
+}
