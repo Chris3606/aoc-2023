@@ -92,20 +92,20 @@ func GetOppositeDir(dir Point) Point {
 	return DIRS_CLOCKWISE[(idx+4)%len(DIRS_CLOCKWISE)]
 }
 
-// type Rectangle struct {
-// 	MinExtent Point
-// 	MaxExtent Point
-// }
+type Rectangle struct {
+	MinExtent Point
+	MaxExtent Point
+}
 
-// func (rect *Rectangle) ExpandToContain(point Point) Rectangle {
-// 	minX := min(point.X, rect.MinExtent.X)
-// 	minY := min(point.Y, rect.MinExtent.Y)
+func (rect *Rectangle) ExpandToContain(point Point) Rectangle {
+	minX := min(point.X, rect.MinExtent.X)
+	minY := min(point.Y, rect.MinExtent.Y)
 
-// 	maxX := max(point.X, rect.MaxExtent.X)
-// 	maxY := max(point.Y, rect.MaxExtent.Y)
+	maxX := max(point.X, rect.MaxExtent.X)
+	maxY := max(point.Y, rect.MaxExtent.Y)
 
-// 	return Rectangle{MinExtent: Point{X: minX, Y: minY}, MaxExtent: Point{X: maxX, Y: maxY}}
-// }
+	return Rectangle{MinExtent: Point{X: minX, Y: minY}, MaxExtent: Point{X: maxX, Y: maxY}}
+}
 
 // Builds a map of how often each element occurs in the given slice
 func BuildHistogram[T comparable](slice []T) map[T]int {
