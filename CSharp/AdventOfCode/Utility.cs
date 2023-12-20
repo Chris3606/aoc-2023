@@ -1,5 +1,6 @@
 ﻿using System.Runtime;
 using SadRogue.Primitives;
+using SadRogue.Primitives.GridViews;
 
 namespace AdventOfCode;
 
@@ -76,6 +77,18 @@ public static class Utility
     public static IEnumerable<T> Yield<T>(this T value)
     {
         yield return value;
+    }
+
+    public static IEnumerable<IEnumerable<Point>> Rows<T>(this IGridView<T> grid, int startingRow = 0)
+    {
+        for (int y = startingRow; y < grid.Height; y++)
+            yield return grid.Row(y);
+    }
+
+    public static IEnumerable<Point> Row<T>(this IGridView<T> grid, int row)
+    {
+        for (int x = 0; x < grid.Width; x++)
+            yield return new Point(x, row);
     }
 }
 
