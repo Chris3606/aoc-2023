@@ -79,16 +79,34 @@ public static class Utility
         yield return value;
     }
 
-    public static IEnumerable<IEnumerable<Point>> Rows<T>(this IGridView<T> grid, int startingRow = 0)
-    {
-        for (int y = startingRow; y < grid.Height; y++)
-            yield return grid.Row(y);
-    }
+    public static RectanglePositionsEnumerator PositionsRowAscending<T>(this IGridView<T> grid)
+        => grid.Positions();
 
-    public static IEnumerable<Point> Row<T>(this IGridView<T> grid, int row)
+    public static IEnumerable<Point> PositionsRowDescending<T>(this IGridView<T> grid)
+    {
+        for (int y = grid.Height - 1; y >= 0; y--)
+        {
+            for (int x = 0; x < grid.Width; x++)
+                yield return (x, y);
+        }
+    }
+    
+    public static IEnumerable<Point> PositionsColAscending<T>(this IGridView<T> grid)
     {
         for (int x = 0; x < grid.Width; x++)
-            yield return new Point(x, row);
+        {
+            for (int y = 0; y < grid.Height; y++)
+                yield return (x, y);
+        }
+    }
+    
+    public static IEnumerable<Point> PositionsColDescending<T>(this IGridView<T> grid)
+    {
+        for (int x = grid.Width - 1; x >= 0; x--)
+        {
+            for (int y = 0; y < grid.Height; y++)
+                yield return (x, y);
+        }
     }
 }
 
